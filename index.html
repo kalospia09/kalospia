@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playful Dark Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        body {
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            width: 100%;
+            height: calc(100vh - 40px);
+            background: #111111;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2a2a2a;
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .chat-title {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .trash-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .trash-icon {
+            width: 20px;
+            height: 20px;
+            fill: #555555;
+            transition: fill 0.2s;
+        }
+
+        .trash-button:hover .trash-icon {
+            fill: #ffffff;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #000000;
+        }
+
+        .message {
+            margin: 10px 0;
+            display: flex;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #ffffff;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .sent .message-bubble {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .typing-indicator {
+            padding: 0 20px;
+            color: #555555;
+            font-size: 14px;
+            height: 20px;
+        }
+
+        .input-container {
+            background: #1a1a1a;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .message-input {
+            flex-grow: 1;
+            background: #2a2a2a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .message-input::placeholder {
+            color: #555555;
+        }
+
+        .send-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .send-icon {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover .send-icon {
+            transform: translateX(3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-title">Chat</div>
+            <button class="trash-button" onclick="deleteChat()">
+                <svg class="trash-icon" viewBox="0 0 24 24">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages"></div>
+        
+        <div class="typing-indicator" id="typingIndicator"></div>
+        
+        <div class="input-container">
+            <input type="text" class="message-input" id="messageInput" placeholder="Type a message">
+            <button class="send-button" onclick="sendMessage()">
+                <svg class="send-icon" viewBox="0 0 24 24">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmqS52ypihassF4hYlFnfNr5VMxxlYsis",
+            authDomain: "project-6a7c4.firebaseapp.com",
+            databaseURL: "https://project-6a7c4-default-rtdb.firebaseio.com",
+            projectId: "project-6a7c4",
+            storageBucket: "project-6a7c4.firebasestorage.app",
+            messagingSenderId: "152367969169",
+            appId: "1:152367969169:web:6bc05a9d8152391e07e030"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let typingTimeout;
+        const messageInput = document.getElementById('messageInput');
+        
+        messageInput.addEventListener('input', () => {
+            database.ref('typing').set(true);
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                database.ref('typing').set(false);
+            }, 1000);
+            localStorage.setItem('messageDraft', messageInput.value);
+        });
+
+        window.addEventListener('load', () => {
+            const draft = localStorage.getItem('messageDraft');
+            if (draft) messageInput.value = draft;
+        });
+
+        database.ref('messages').on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            appendMessage(message);
+        });
+
+        database.ref('typing').on('value', (snapshot) => {
+            document.getElementById('typingIndicator').textContent = snapshot.val() ? "typing..." : "";
+        });
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                database.ref('messages').push({
+                    text: message,
+                    timestamp: Date.now(),
+                    sender: 'user'
+                });
+                messageInput.value = '';
+                localStorage.removeItem('messageDraft');
+            }
+        }
+
+        function appendMessage(message) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.sender === 'user' ? 'sent' : 'received'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = message.text;
+            
+            messageDiv.appendChild(bubble);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function deleteChat() {
+            if (confirm('Are you sure you want to delete all messages?')) {
+                database.ref('messages').remove();
+                document.getElementById('chatMessages').innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
