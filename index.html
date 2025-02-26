@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg 
-
-xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23fff' d='M20 2H4c-1.1 
-
-0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23fff' d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/></svg>">
     <style>
         * {
             margin: 0;
@@ -364,20 +360,14 @@ xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23fff' d='M2
             <div class="chat-title">Chat</div>
             <div class="header-buttons">
                 <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx">
-                <button class="file-button" onclick="document.getElementById
-
-('fileInput').click()">
+                <button class="file-button" onclick="document.getElementById('fileInput').click()">
                     <svg class="file-icon" viewBox="0 0 24 24">
-                        <path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 
-
-2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/>
+                        <path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/>
                     </svg>
                 </button>
                 <button class="trash-button" onclick="deleteChat()">
                     <svg class="trash-icon" viewBox="0 0 24 24">
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-
-
-1-1h-5l-1 1H5v2h14V4z"/>
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </svg>
                 </button>
             </div>
@@ -390,14 +380,12 @@ xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23fff' d='M2
         <div class="input-container">
             <div class="reply-preview" id="replyPreview">
                 <span id="replyText"></span>
-                <button class="close-reply" onclick="cancelReply()">✕</button>
+                <button class="close-reply" onclick="cancelReply()">?</button>
             </div>
             <div class="input-row">
-                <div class="message-input" id="messageInput" contenteditable="true" 
-
-placeholder="Type a message..."></div>
+                <div class="message-input" id="messageInput" contenteditable="true" placeholder="Type a message..."></div>
                 <div class="input-buttons">
-                    <button class="emoji-button" onclick="toggleEmojiPicker()">😊</button>
+                    <button class="emoji-button" onclick="toggleEmojiPicker()">??</button>
                     <button class="send-button" onclick="sendMessage()">
                         <svg class="send-icon" viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -409,33 +397,7 @@ placeholder="Type a message..."></div>
         </div>
     </div>
 
-    <audio id="notificationSound" 
-
-src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//
-
-tQwAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhgBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-VVWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr///////////////////////////////////////////
-
-8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAABoZyHdikAAAAAAAAAAAAAAAAAAAA//tAxAAAAAAAAAAA
-
-AAAAAAAAAAAAWGluZwAAAA8AAAACAAAD
-
-+ADLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8
-
-vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL
-
-y8vLy8vLy8vLy8vLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
-AAAAAAAAAAAAAAAAAAAAAA//sQxOWDxAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" 
-
-type="audio/mpeg"></audio>
+    <audio id="notificationSound" src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQwAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhgBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr///////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAABoZyHdikAAAAAAAAAAAAAAAAAAAA//tAxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAD+ADLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxOWDxAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg"></audio>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -470,30 +432,14 @@ type="audio/mpeg"></audio>
         // Enhanced emoji picker with more emojis
         function initEmojiPicker() {
             const emojis = [
-                '😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', 
-
-'🥰', '😘',
-                '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', 
-
-'😏', '😒',
-                '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', 
-
-'😠', '😡',
-                '👍', '👎', '👊', '✊', '🤛', '🤜', '🤝', '👍', '👎', '👆', '👇', '👈', '👉', '❤️', 
-
-'🧡', '💛',
-                '💚', '💙', '💜', '🖤', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', 
-
-'🌈', '✨',
-                '😸', '😹', '😺', '😻', '😼', '😽', '😾', '😿', '🙀', '🐱', '🐶', '🐭', '🐹', '🐰', 
-
-'🦊', '🐻',
-                '🎉', '🎊', '🎈', '🎂', '🎁', '🎄', '🌟', '⭐', '✨', '💫', '🌙', '☀️', '⛅', '☁️', 
-
-'🌤️', '🌥️',
-                '🍕', '🍔', '🍟', '🌭', '🍿', '🧂', '🥤', '☕', '🍺', '🍷', '🥂', '🍸', '🍹', '🧊', 
-
-'🥃', '🍶'
+                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
+                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
+                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
+                '??', '??', '??', '?', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
+                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '?',
+                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
+                '??', '??', '??', '??', '??', '??', '??', '?', '?', '??', '??', '??', '?', '??', '???', '???',
+                '??', '??', '??', '??', '??', '??', '??', '?', '??', '??', '??', '??', '??', '??', '??', '??'
             ];
 
             const picker = document.getElementById('emojiPicker');
@@ -522,16 +468,8 @@ type="audio/mpeg"></audio>
             // Update favicon to show unread state
             const favicon = document.querySelector('link[rel="icon"]');
             favicon.href = unreadMessages > 0 ? 
-                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 
-
-24 24"><path fill="%23ff4444" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1
-
--.9-2-2-2z"/></svg>' :
-                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 
-
-24 24"><path fill="%23fff" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9
-
--2-2-2z"/></svg>';
+                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff4444" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>' :
+                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23fff" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
         }
 
         const messageInput = document.getElementById('messageInput');
@@ -568,9 +506,7 @@ type="audio/mpeg"></audio>
 
             uploadTask.on('state_changed',
                 (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 
-
-100;
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     progressBar.querySelector('.progress').style.width = progress + '%';
                 },
                 (error) => {
@@ -675,9 +611,7 @@ type="audio/mpeg"></audio>
                         deviceId: message.deviceId
                     };
                     showReplyPreview(message.text);
-                    document.querySelectorAll('.message').forEach(m => m.classList.remove
-
-('replying'));
+                    document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
                     messageDiv.classList.add('replying');
                 }
             });
@@ -685,7 +619,7 @@ type="audio/mpeg"></audio>
             if (message.replyTo) {
                 const replyDiv = document.createElement('div');
                 replyDiv.className = 'reply-to';
-                replyDiv.textContent = `↳ ${message.replyTo.text}`;
+                replyDiv.textContent = `? ${message.replyTo.text}`;
                 messageDiv.appendChild(replyDiv);
             }
 
@@ -721,9 +655,7 @@ type="audio/mpeg"></audio>
             const timestamp = document.createElement('span');
             timestamp.className = 'timestamp';
             const time = new Date(message.timestamp || Date.now());
-            timestamp.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: 
-
-'2-digit' });
+            timestamp.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             const readStatus = document.createElement('span');
             readStatus.className = 'read-status';
@@ -748,15 +680,11 @@ type="audio/mpeg"></audio>
         function cancelReply() {
             replyToMessage = null;
             replyPreview.classList.remove('active');
-            document.querySelectorAll('.message').forEach(m => m.classList.remove
-
-('replying'));
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
         }
 
         function updateMessageStatus(messageId, message) {
-            const messageElement = document.querySelector(`[data-message-
-
-id="${messageId}"]`);
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
             if (messageElement && message.deviceId === deviceId) {
                 const readStatus = messageElement.querySelector('.read-status');
                 if (readStatus) {
@@ -788,9 +716,7 @@ id="${messageId}"]`);
 
         // Close emoji picker when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.emoji-button') && !e.target.closest('.emoji-picker')) 
-
-{
+            if (!e.target.closest('.emoji-button') && !e.target.closest('.emoji-picker')) {
                 document.getElementById('emojiPicker').style.display = 'none';
             }
         });
