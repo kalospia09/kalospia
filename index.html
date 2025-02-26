@@ -380,12 +380,12 @@
         <div class="input-container">
             <div class="reply-preview" id="replyPreview">
                 <span id="replyText"></span>
-                <button class="close-reply" onclick="cancelReply()">?</button>
+                <button class="close-reply" onclick="cancelReply()">✕</button>
             </div>
             <div class="input-row">
                 <div class="message-input" id="messageInput" contenteditable="true" placeholder="Type a message..."></div>
                 <div class="input-buttons">
-                    <button class="emoji-button" onclick="toggleEmojiPicker()">??</button>
+                    <button class="emoji-button" onclick="toggleEmojiPicker()">😊</button>
                     <button class="send-button" onclick="sendMessage()">
                         <svg class="send-icon" viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -397,7 +397,9 @@
         </div>
     </div>
 
-    <audio id="notificationSound" src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQwAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhgBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr///////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAABoZyHdikAAAAAAAAAAAAAAAAAAAA//tAxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAD+ADLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxOWDxAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg"></audio>
+    <audio id="notificationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBkp5q9z/xHQdAGiSvtfWmls2H1h+ntHes3Y8GlKGwu7/w3AUA12cv+L/0YUhAGGby/f/0ncAAU2FxPL/w3wPAIi6//+7VgAGj///90sABJ///+g+ADK///+qKC6Q////hhoAlf///2QAB5T///9eAAOI////bAABdv///4YAAVn///+qAAAy////zwAAH/////8CAP///////wEA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAA=" type="audio/wav">
+    </audio>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -429,23 +431,33 @@
         const originalTitle = document.title;
         const notificationSound = document.getElementById('notificationSound');
 
-        // Enhanced emoji picker with more emojis
         function initEmojiPicker() {
             const emojis = [
-                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
-                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
-                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
-                '??', '??', '??', '?', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
-                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '?',
-                '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??',
-                '??', '??', '??', '??', '??', '??', '??', '?', '?', '??', '??', '??', '?', '??', '???', '???',
-                '??', '??', '??', '??', '??', '??', '??', '?', '??', '??', '??', '??', '??', '??', '??', '??'
+                // Text emoticons for universal compatibility
+                ':)', ':(', ':D', ':P', ';)', ':|', ':O', ':*', '<3',
+                // Common face emojis (widely supported)
+                '😀', '😃', '😄', '😊', '🙂', '😉', '😍', '😎', '😢',
+                // Hand gestures (widely supported)
+                '👍', '👎', '👋', '👌', '✌️', 
+                // Hearts (widely supported)
+                '❤️', '💙', '💚', '💛', '💜',
+                // Other common symbols (widely supported)
+                '⭐', '✨', '🔥', '💯', '🎉',
+                // Weather (widely supported)
+                '☀️', '⛅', '☁️', '🌧️', '⚡',
+                // Basic objects (widely supported)
+                '📱', '💻', '📷', '🎮', '🎵',
+                // Basic emotions (widely supported)
+                '😴', '😅', '😂', '🤔', '😬'
             ];
 
             const picker = document.getElementById('emojiPicker');
             picker.innerHTML = '';
             emojis.forEach(emoji => {
                 const span = document.createElement('span');
+                span.style.padding = '5px';
+                span.style.cursor = 'pointer';
+                span.style.fontSize = '18px';
                 span.textContent = emoji;
                 span.onclick = () => {
                     insertEmoji(emoji);
@@ -465,7 +477,6 @@
             document.title = unreadMessages > 0 ? 
                 `(${unreadMessages}) ${originalTitle}` : originalTitle;
 
-            // Update favicon to show unread state
             const favicon = document.querySelector('link[rel="icon"]');
             favicon.href = unreadMessages > 0 ? 
                 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff4444" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>' :
@@ -476,6 +487,7 @@
         const fileInput = document.getElementById('fileInput');
         const replyPreview = document.getElementById('replyPreview');
         const replyText = document.getElementById('replyText');
+        const messageVisibility = new Map();
 
         messageInput.addEventListener('input', () => {
             database.ref('typing').set({
@@ -491,54 +503,42 @@
             localStorage.setItem('messageDraft', messageInput.textContent);
         });
 
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        const messageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const messageDiv = entry.target;
+                const messageId = messageDiv.getAttribute('data-message-id');
 
-            const progressBar = document.createElement('div');
-            progressBar.className = 'progress-bar';
-            progressBar.innerHTML = '<div class="progress"></div>';
-            progressBar.style.display = 'block';
-            document.querySelector('.input-container').appendChild(progressBar);
-
-            const storageRef = storage.ref(`files/${Date.now()}_${file.name}`);
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    progressBar.querySelector('.progress').style.width = progress + '%';
-                },
-                (error) => {
-                    console.error('Upload failed:', error);
-                    progressBar.remove();
-                },
-                async () => {
-                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                    progressBar.remove();
-                    sendMessage(downloadURL, file.type);
+                if (entry.isIntersecting && !messageVisibility.has(messageId)) {
+                    messageVisibility.set(messageId, true);
+                    const messageData = messagesMap.get(messageId);
+                    if (messageData && messageData.deviceId !== deviceId) {
+                        database.ref(`messages/${messageId}/readBy/${deviceId}`).set(true);
+                    }
                 }
-            );
+            });
+        }, {
+            threshold: 0.7 
         });
 
-        window.addEventListener('load', () => {
-            const draft = localStorage.getItem('messageDraft');
-            if (draft) messageInput.textContent = draft;
-            initEmojiPicker();
-        });
+        const messagesMap = new Map();
 
         database.ref('messages').on('child_added', (snapshot) => {
             const message = snapshot.val();
-            appendMessage(message, snapshot.key);
+            const messageId = snapshot.key;
+            messagesMap.set(messageId, message);
+
+            appendMessage(message, messageId);
 
             if (message.deviceId !== deviceId) {
-                notificationSound.play().catch(() => {});
+                const sound = document.getElementById('notificationSound');
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(() => {});
+                }
 
                 if (!document.hasFocus()) {
                     updateUnreadCount(true);
                 }
-
-                database.ref(`messages/${snapshot.key}/readBy/${deviceId}`).set(true);
             }
         });
 
@@ -556,7 +556,7 @@
             const typingIndicator = document.getElementById('typingIndicator');
 
             if (typingData && typingData.deviceId !== deviceId) {
-                typingIndicator.textContent = "typing...";
+                typingIndicator.textContent = "Someone is typing...";
             } else {
                 typingIndicator.textContent = "";
             }
@@ -619,7 +619,7 @@
             if (message.replyTo) {
                 const replyDiv = document.createElement('div');
                 replyDiv.className = 'reply-to';
-                replyDiv.textContent = `? ${message.replyTo.text}`;
+                replyDiv.textContent = `↳ ${message.replyTo.text}`;
                 messageDiv.appendChild(replyDiv);
             }
 
@@ -670,6 +670,10 @@
             messageDiv.appendChild(messageInfo);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            if (!isOwnMessage) {
+                messageObserver.observe(messageDiv);
+            }
         }
 
         function showReplyPreview(text) {
@@ -693,10 +697,11 @@
             }
         }
 
+        // Update read status function to use ASCII characters
         function updateReadStatus(element, readBy) {
             const readCount = Object.keys(readBy).length;
             const otherDevicesRead = readCount > 1;
-            element.textContent = otherDevicesRead ? '>> ' : '> ';
+            element.textContent = otherDevicesRead ? '>>' : '>';
             element.style.color = otherDevicesRead ? '#4CAF50' : '#888';
         }
 
@@ -714,7 +719,6 @@
             }
         }
 
-        // Close emoji picker when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.emoji-button') && !e.target.closest('.emoji-picker')) {
                 document.getElementById('emojiPicker').style.display = 'none';
@@ -727,26 +731,21 @@
         }
 
         function insertEmoji(emoji) {
+            if (document.activeElement !== messageInput) {
+                messageInput.focus();
+            }
             const range = window.getSelection().getRangeAt(0);
             const node = document.createTextNode(emoji);
             range.insertNode(node);
             range.setStartAfter(node);
             range.setEndAfter(node);
-            messageInput.focus();
         }
 
-        setInterval(() => {
-            const messages = document.querySelectorAll('.message');
-            messages.forEach(message => {
-                const messageId = message.getAttribute('data-message-id');
-                database.ref(`messages/${messageId}`).once('value', snapshot => {
-                    const messageData = snapshot.val();
-                    if (messageData) {
-                        updateMessageStatus(messageId, messageData);
-                     }
-                });
-            });
-        }, 1000);
+        window.addEventListener('load', () => {
+            const draft = localStorage.getItem('messageDraft');
+            if (draft) messageInput.textContent = draft;
+            initEmojiPicker();
+        });
     </script>
 </body>
 </html>
