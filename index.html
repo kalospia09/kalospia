@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Comic Sans MS', cursive;
+            font-family: Arial, sans-serif;
         }
 
         body {
@@ -25,7 +25,7 @@
             width: 100%;
             height: calc(100vh - 40px);
             background: #111111;
-            border-radius: 10px;
+            border-radius: 4px;
             display: flex;
             flex-direction: column;
             border: 1px solid #2a2a2a;
@@ -46,21 +46,27 @@
             font-size: 18px;
         }
 
-        .trash-button {
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .trash-button, .file-button {
             background: none;
             border: none;
             cursor: pointer;
             padding: 5px;
         }
 
-        .trash-icon {
+        .trash-icon, .file-icon {
             width: 20px;
             height: 20px;
             fill: #555555;
             transition: fill 0.2s;
         }
 
-        .trash-button:hover .trash-icon {
+        .trash-button:hover .trash-icon,
+        .file-button:hover .file-icon {
             fill: #ffffff;
         }
 
@@ -74,31 +80,65 @@
         .message {
             margin: 10px 0;
             display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
         }
 
         .message.received {
-            justify-content: flex-start;
+            align-items: flex-start;
         }
 
         .message.sent {
-            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .message.replying .message-bubble {
+            background-color: rgba(255,255,255,0.15) !important;
         }
 
         .message-bubble {
             max-width: 70%;
             padding: 8px 12px;
-            border-radius: 15px;
+            border-radius: 4px;
             font-size: 14px;
             color: #ffffff;
             white-space: pre-wrap;
             overflow-wrap: break-word;
             border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
+            position: relative;
         }
 
-        .sent .message-bubble {
+        .reply-to {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+            padding: 4px 8px;
             background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .message-info {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-status {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 11px;
         }
 
         .typing-indicator {
@@ -112,9 +152,38 @@
             background: #1a1a1a;
             padding: 10px 20px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 10px;
             border-top: 1px solid #2a2a2a;
+        }
+
+        .reply-preview {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .reply-preview.active {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reply-preview .close-reply {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
         }
 
         .message-input {
@@ -122,13 +191,77 @@
             background: #2a2a2a;
             border: none;
             padding: 12px 20px;
-            border-radius: 25px;
+            border-radius: 4px;
             color: #ffffff;
             font-size: 14px;
+            min-height: 45px;
+            max-height: 150px;
+            outline: none;
+            resize: none;
         }
 
-        .message-input::placeholder {
+        .input-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .emoji-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
             color: #555555;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .emoji-button:hover {
+            color: #ffffff;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            display: none;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .emoji-picker.active {
+            display: grid;
+        }
+
+        .file-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: #2a2a2a;
+            margin-top: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background: #4CAF50;
+            width: 0;
+            transition: width 0.3s;
         }
 
         .send-button {
@@ -156,29 +289,48 @@
     <div class="chat-container">
         <div class="chat-header">
             <div class="chat-title">Chat</div>
-            <button class="trash-button" onclick="deleteChat()">
-                <svg class="trash-icon" viewBox="0 0 24 24">
-                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-            </button>
+            <div class="header-buttons">
+                <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx">
+                <button class="file-button" onclick="document.getElementById('fileInput').click()">
+                    <svg class="file-icon" viewBox="0 0 24 24">
+                        <path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/>
+                    </svg>
+                </button>
+                <button class="trash-button" onclick="deleteChat()">
+                    <svg class="trash-icon" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-        
+
         <div class="chat-messages" id="chatMessages"></div>
-        
+
         <div class="typing-indicator" id="typingIndicator"></div>
-        
+
         <div class="input-container">
-            <input type="text" class="message-input" id="messageInput" placeholder="Type a message">
-            <button class="send-button" onclick="sendMessage()">
-                <svg class="send-icon" viewBox="0 0 24 24">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-            </button>
+            <div class="reply-preview" id="replyPreview">
+                <span id="replyText"></span>
+                <button class="close-reply" onclick="cancelReply()">✕</button>
+            </div>
+            <div class="input-row">
+                <div class="message-input" id="messageInput" placeholder="Type a message (Shift + Enter for new line)" contenteditable="true"></div>
+                <div class="input-buttons">
+                    <button class="emoji-button" onclick="toggleEmojiPicker()">:)</button>
+                    <button class="send-button" onclick="sendMessage()">
+                        <svg class="send-icon" viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="emoji-picker" id="emojiPicker"></div>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCmqS52ypihassF4hYlFnfNr5VMxxlYsis",
@@ -192,61 +344,291 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const storage = firebase.storage();
+
+        const deviceId = localStorage.getItem('deviceId') || 
+            Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('deviceId', deviceId);
 
         let typingTimeout;
+        let lastTap = 0;
+        let replyToMessage = null;
         const messageInput = document.getElementById('messageInput');
-        
+        const fileInput = document.getElementById('fileInput');
+        const replyPreview = document.getElementById('replyPreview');
+        const replyText = document.getElementById('replyText');
+        const emojiPicker = document.getElementById('emojiPicker');
+
+        // Manual emoji implementation
+        function toggleEmojiPicker() {
+            if (!emojiPicker.innerHTML) {
+                // Basic emojis that work across all browsers
+                const emojis = [
+                    ':)', ':(', ':D', ':P', ';)', ':|', ':O', ':*', '<3',
+                    '🙂', '😊', '😄', '😃', '😅', '😆', '😇', '🥰', '😛',
+                    '👍', '👌', '🎉', '💕', '💖', '💪', '🌟', '✨', '🔥',
+                    '🌺', '🌸'
+                ];
+
+                emojis.forEach(emoji => {
+                    const span = document.createElement('span');
+                    span.style.padding = '5px';
+                    span.style.cursor = 'pointer';
+                    span.style.fontSize = '18px';
+                    span.textContent = emoji;
+                    span.onclick = () => {
+                        insertEmoji(emoji);
+                        toggleEmojiPicker();
+                    };
+                    emojiPicker.appendChild(span);
+                });
+            }
+
+            emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'grid' : 'none';
+        }
+
+        function insertEmoji(emoji) {
+            const range = window.getSelection().getRangeAt(0);
+            const node = document.createTextNode(emoji);
+            range.insertNode(node);
+            range.setStartAfter(node);
+            range.setEndAfter(node);
+            messageInput.focus();
+        }
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-button') && !e.target.closest('.emoji-picker')) {
+                emojiPicker.style.display = 'none';
+            }
+        });
+
         messageInput.addEventListener('input', () => {
-            database.ref('typing').set(true);
+            database.ref('typing').set({
+                deviceId: deviceId,
+                timestamp: Date.now()
+            });
+
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
-                database.ref('typing').set(false);
+                database.ref('typing').remove();
             }, 1000);
-            localStorage.setItem('messageDraft', messageInput.value);
+
+            localStorage.setItem('messageDraft', messageInput.textContent);
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            progressBar.innerHTML = '<div class="progress"></div>';
+            progressBar.style.display = 'block';
+            document.querySelector('.input-container').appendChild(progressBar);
+
+            const storageRef = storage.ref(`files/${Date.now()}_${file.name}`);
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressBar.querySelector('.progress').style.width = progress + '%';
+                },
+                (error) => {
+                    console.error('Upload failed:', error);
+                    progressBar.remove();
+                },
+                async () => {
+                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                    progressBar.remove();
+                    sendMessage(downloadURL, file.type);
+                }
+            );
         });
 
         window.addEventListener('load', () => {
             const draft = localStorage.getItem('messageDraft');
-            if (draft) messageInput.value = draft;
+            if (draft) messageInput.textContent = draft;
         });
 
         database.ref('messages').on('child_added', (snapshot) => {
             const message = snapshot.val();
-            appendMessage(message);
+            appendMessage(message, snapshot.key);
+
+            if (message.deviceId !== deviceId) {
+                database.ref(`messages/${snapshot.key}/readBy/${deviceId}`).set(true);
+            }
+        });
+
+        database.ref('messages').on('child_changed', (snapshot) => {
+            const message = snapshot.val();
+            updateMessageStatus(snapshot.key, message);
         });
 
         database.ref('typing').on('value', (snapshot) => {
-            document.getElementById('typingIndicator').textContent = snapshot.val() ? "typing..." : "";
+            const typingData = snapshot.val();
+            const typingIndicator = document.getElementById('typingIndicator');
+
+            if (typingData && typingData.deviceId !== deviceId) {
+                typingIndicator.textContent = "typing...";
+            } else {
+                typingIndicator.textContent = "";
+            }
         });
 
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message) {
-                database.ref('messages').push({
-                    text: message,
-                    timestamp: Date.now(),
-                    sender: 'user'
-                });
-                messageInput.value = '';
-                localStorage.removeItem('messageDraft');
+        function sendMessage(fileUrl = null, fileType = null) {
+            const text = messageInput.textContent.trim();
+            if (!text && !fileUrl) return;
+
+            const messageRef = database.ref('messages').push();
+            const message = {
+                text: text || '',
+                timestamp: Date.now(),
+                deviceId: deviceId,
+                readBy: {
+                    [deviceId]: true
+                }
+            };
+
+            if (fileUrl) {
+                message.fileUrl = fileUrl;
+                message.fileType = fileType;
             }
+
+            if (replyToMessage) {
+                message.replyTo = replyToMessage;
+                cancelReply();
+            }
+
+            messageRef.set(message);
+            messageInput.textContent = '';
+            localStorage.removeItem('messageDraft');
         }
 
-        function appendMessage(message) {
+        function hashToHue(str) {
+            if (!str) return 180;
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return hash % 360;
+        }
+
+        function appendMessage(message, messageId) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.sender === 'user' ? 'sent' : 'received'}`;
-            
+            const isOwnMessage = message.deviceId === deviceId;
+            messageDiv.className = `message ${isOwnMessage ? 'sent' : 'received'}`;
+            messageDiv.setAttribute('data-message-id', messageId);
+
+            let tapTimer = null;
+            messageDiv.addEventListener('click', () => {
+                const now = Date.now();
+                const timeSinceLastTap = now - lastTap;
+                lastTap = now;
+
+                if (timeSinceLastTap < 300) {
+                    replyToMessage = {
+                        id: messageId,
+                        text: message.text,
+                        deviceId: message.deviceId
+                    };
+                    showReplyPreview(message.text);
+                    document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
+                    messageDiv.classList.add('replying');
+                }
+            });
+
+            if (message.replyTo) {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'reply-to';
+                replyDiv.textContent = `↳ ${message.replyTo.text}`;
+                messageDiv.appendChild(replyDiv);
+            }
+
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.textContent = message.text;
-            
+            bubble.style.backgroundColor = isOwnMessage ? 
+                'rgba(255,255,255,0.1)' : 
+                `hsla(${hashToHue(message.deviceId || '')}, 70%, 25%, 0.3)`;
+
+            if (message.fileUrl) {
+                if (message.fileType && message.fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = message.fileUrl;
+                    img.className = 'file-preview';
+                    img.loading = 'lazy';
+                    bubble.appendChild(img);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = message.fileUrl;
+                    link.target = '_blank';
+                    link.textContent = 'Download File';
+                    link.style.color = '#fff';
+                    bubble.appendChild(link);
+                }
+            }
+
+            if (message.text) {
+                const textDiv = document.createElement('div');
+                textDiv.textContent = message.text;
+                bubble.appendChild(textDiv);
+            }
+
+            const messageInfo = document.createElement('div');
+            messageInfo.className = 'message-info';
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            const time = new Date(message.timestamp || Date.now());
+            timestamp.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const readStatus = document.createElement('span');
+            readStatus.className = 'read-status';
+            updateReadStatus(readStatus, message.readBy || {});
+
+            messageInfo.appendChild(timestamp);
+            if (isOwnMessage) {
+                messageInfo.appendChild(readStatus);
+            }
+
             messageDiv.appendChild(bubble);
+            messageDiv.appendChild(messageInfo);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        messageInput.addEventListener('keypress', (e) => {
+        function showReplyPreview(text) {
+            replyText.textContent = `Replying to: ${text}`;
+            replyPreview.classList.add('active');
+        }
+
+        function cancelReply() {
+            replyToMessage = null;
+            replyPreview.classList.remove('active');
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
+        }
+
+        function updateMessageStatus(messageId, message) {
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (messageElement && message.deviceId === deviceId) {
+                const readStatus = messageElement.querySelector('.read-status');
+                if (readStatus) {
+                    updateReadStatus(readStatus, message.readBy || {});
+                }
+            }
+        }
+
+        function updateReadStatus(element, readBy) {
+            const readCount = Object.keys(readBy).length;
+            const otherDevicesRead = readCount > 1;
+            // Using simple ASCII characters for better compatibility
+            element.textContent = otherDevicesRead ? '>> ' : '> ';
+            element.style.color = otherDevicesRead ? '#4CAF50' : '#888';
+        }
+
+        messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
@@ -259,6 +641,19 @@
                 document.getElementById('chatMessages').innerHTML = '';
             }
         }
+
+        setInterval(() => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(message => {
+                const messageId = message.getAttribute('data-message-id');
+                database.ref(`messages/${messageId}`).once('value', snapshot => {
+                    const messageData = snapshot.val();
+                    if (messageData) {
+                        updateMessageStatus(messageId, messageData);
+                    }
+                });
+            });
+        }, 1000);
     </script>
 </body>
 </html>
