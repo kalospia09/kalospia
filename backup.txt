@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23fff' d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .chat-container {
+            flex: 1;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            background: #111111;
+            display: flex;
+            flex-direction: column;
+            border: none;
+            height: 100%;
+        }
+
+        @media (min-width: 1200px) {
+            .chat-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                height: 100vh;
+                border: 1px solid #2a2a2a;
+            }
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .chat-title {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .trash-button, .file-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .trash-icon, .file-icon {
+            width: 20px;
+            height: 20px;
+            fill: #555555;
+            transition: fill 0.2s;
+        }
+
+        .trash-button:hover .trash-icon,
+        .file-button:hover .file-icon {
+            fill: #ffffff;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #000000;
+            margin: 0;
+            height: calc(100vh - 180px);
+        }
+
+        .message {
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+            max-width: 70%;
+        }
+
+        .message.received {
+            align-items: flex-start;
+            margin-right: auto;
+        }
+
+        .message.sent {
+            align-items: flex-end;
+            margin-left: auto;
+        }
+
+        .message.replying .message-bubble {
+            background-color: rgba(255,255,255,0.15) !important;
+        }
+
+        .message-bubble {
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #ffffff;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .message.sent .message-bubble {
+            background: #1e88e5;
+            border: none;
+        }
+
+        .message.received .message-bubble {
+            background: #424242;
+            border: none;
+        }
+
+        .reply-to {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .message-info {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-status {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .typing-indicator {
+            padding: 0 20px;
+            color: #555555;
+            font-size: 14px;
+            height: 20px;
+        }
+
+        .input-container {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            border-top: 1px solid #2a2a2a;
+            width: 100%;
+            position: relative;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .reply-preview {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .reply-preview.active {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reply-preview .close-reply {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex-grow: 1;
+            background: #2a2a2a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            color: #ffffff;
+            font-size: 14px;
+            min-height: 45px;
+            max-height: 150px;
+            outline: none;
+            resize: none;
+            margin-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .input-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .emoji-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: #555555;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .emoji-button:hover {
+            color: #ffffff;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 100%;
+            right: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+            width: 300px;
+            height: 300px;
+            overflow-y: auto;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        .emoji-picker.active {
+            display: grid;
+        }
+
+        .emoji-picker span {
+            cursor: pointer;
+            text-align: center;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .emoji-picker span:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .file-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 5px;
+            border-radius: 10px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: #2a2a2a;
+            margin-top: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background: #4CAF50;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .send-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .send-icon {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover .send-icon {
+            transform: translateX(3px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .chat-container {
+                height: 100%;
+                margin: 0;
+                border: none;
+            }
+
+            .chat-messages {
+                height: calc(100vh - 160px);
+                padding: 10px;
+            }
+
+            .input-container {
+                padding: 10px;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .message {
+                max-width: 85%;
+            }
+
+            .emoji-picker {
+                width: calc(100vw - 40px);
+                height: 250px;
+                bottom: 100%;
+                right: 10px;
+                left: 10px;
+                margin-bottom: 5px;
+            }
+
+            .message-input {
+                padding: 10px 15px;
+                font-size: 16px;
+            }
+
+            .input-buttons {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-title">Chat</div>
+            <div class="header-buttons">
+                <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx">
+                <button class="file-button" onclick="document.getElementById('fileInput').click()">
+                    <svg class="file-icon" viewBox="0 0 24 24">
+                        <path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/>
+                    </svg>
+                </button>
+                <button class="trash-button" onclick="deleteChat()">
+                    <svg class="trash-icon" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="typing-indicator" id="typingIndicator"></div>
+
+        <div class="input-container">
+            <div class="reply-preview" id="replyPreview">
+                <span id="replyText"></span>
+                <button class="close-reply" onclick="cancelReply()">✕</button>
+            </div>
+            <div class="input-row">
+                <div class="message-input" id="messageInput" contenteditable="true" placeholder="Type a message..."></div>
+                <div class="input-buttons">
+                    <button class="emoji-button" onclick="toggleEmojiPicker()">😊</button>
+                    <button class="send-button" onclick="sendMessage()">
+                        <svg class="send-icon" viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="emoji-picker" id="emojiPicker"></div>
+        </div>
+    </div>
+
+    <audio id="notificationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBkp5q9z/xHQdAGiSvtfWmls2H1h+ntHes3Y8GlKGwu7/w3AUA12cv+L/0YUhAGGby/f/0ncAAU2FxPL/w3wPAIi6//+7VgAGj///90sABJ///+g+ADK///+qKC6Q////hhoAlf///2QAB5T///9eAAOI////bAABdv///4YAAVn///+qAAAy////zwAAH/////8CAP///////wEA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAD///////8AAP///////wAA////////AAA=" type="audio/wav">
+    </audio>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmqS52ypihassF4hYlFnfNr5VMxxlYsis",
+            authDomain: "project-6a7c4.firebaseapp.com",
+            databaseURL: "https://project-6a7c4-default-rtdb.firebaseio.com",
+            projectId: "project-6a7c4",
+            storageBucket: "project-6a7c4.firebasestorage.app",
+            messagingSenderId: "152367969169",
+            appId: "1:152367969169:web:6bc05a9d8152391e07e030"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        const deviceId = localStorage.getItem('deviceId') || 
+            Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('deviceId', deviceId);
+
+        let typingTimeout;
+        let lastTap = 0;
+        let replyToMessage = null;
+        let unreadMessages = 0;
+        const originalTitle = document.title;
+        const notificationSound = document.getElementById('notificationSound');
+
+        function initEmojiPicker() {
+            const emojis = [
+                // Text emoticons for universal compatibility
+                ':)', ':(', ':D', ':P', ';)', ':|', ':O', ':*', '<3',
+                // Common face emojis (widely supported)
+                '😀', '😃', '😄', '😊', '🙂', '😉', '😍', '😎', '😢',
+                // Hand gestures (widely supported)
+                '👍', '👎', '👋', '👌', '✌️', 
+                // Hearts (widely supported)
+                '❤️', '💙', '💚', '💛', '💜',
+                // Other common symbols (widely supported)
+                '⭐', '✨', '🔥', '💯', '🎉',
+                // Weather (widely supported)
+                '☀️', '⛅', '☁️', '🌧️', '⚡',
+                // Basic objects (widely supported)
+                '📱', '💻', '📷', '🎮', '🎵',
+                // Basic emotions (widely supported)
+                '😴', '😅', '😂', '🤔', '😬'
+            ];
+
+            const picker = document.getElementById('emojiPicker');
+            picker.innerHTML = '';
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.style.padding = '5px';
+                span.style.cursor = 'pointer';
+                span.style.fontSize = '18px';
+                span.textContent = emoji;
+                span.onclick = () => {
+                    insertEmoji(emoji);
+                    toggleEmojiPicker();
+                };
+                picker.appendChild(span);
+            });
+        }
+
+        function updateUnreadCount(increment = true) {
+            if (increment) {
+                unreadMessages++;
+            } else {
+                unreadMessages = 0;
+            }
+
+            document.title = unreadMessages > 0 ? 
+                `(${unreadMessages}) ${originalTitle}` : originalTitle;
+
+            const favicon = document.querySelector('link[rel="icon"]');
+            favicon.href = unreadMessages > 0 ? 
+                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff4444" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>' :
+                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23fff" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
+        }
+
+        const messageInput = document.getElementById('messageInput');
+        const fileInput = document.getElementById('fileInput');
+        const replyPreview = document.getElementById('replyPreview');
+        const replyText = document.getElementById('replyText');
+        const messageVisibility = new Map();
+
+        messageInput.addEventListener('input', () => {
+            database.ref('typing').set({
+                deviceId: deviceId,
+                timestamp: Date.now()
+            });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                database.ref('typing').remove();
+            }, 1000);
+
+            localStorage.setItem('messageDraft', messageInput.textContent);
+        });
+
+        const messageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const messageDiv = entry.target;
+                const messageId = messageDiv.getAttribute('data-message-id');
+
+                if (entry.isIntersecting && !messageVisibility.has(messageId)) {
+                    messageVisibility.set(messageId, true);
+                    const messageData = messagesMap.get(messageId);
+                    if (messageData && messageData.deviceId !== deviceId) {
+                        database.ref(`messages/${messageId}/readBy/${deviceId}`).set(true);
+                    }
+                }
+            });
+        }, {
+            threshold: 0.7 
+        });
+
+        const messagesMap = new Map();
+
+        database.ref('messages').on('child_added', (snapshot) => {
+            const message = snapshot.val();
+            const messageId = snapshot.key;
+            messagesMap.set(messageId, message);
+
+            appendMessage(message, messageId);
+
+            if (message.deviceId !== deviceId) {
+                const sound = document.getElementById('notificationSound');
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(() => {});
+                }
+
+                if (!document.hasFocus()) {
+                    updateUnreadCount(true);
+                }
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            updateUnreadCount(false);
+        });
+
+        database.ref('messages').on('child_changed', (snapshot) => {
+            const message = snapshot.val();
+            updateMessageStatus(snapshot.key, message);
+        });
+
+        database.ref('typing').on('value', (snapshot) => {
+            const typingData = snapshot.val();
+            const typingIndicator = document.getElementById('typingIndicator');
+
+            if (typingData && typingData.deviceId !== deviceId) {
+                typingIndicator.textContent = "Someone is typing...";
+            } else {
+                typingIndicator.textContent = "";
+            }
+        });
+
+        function sendMessage(fileUrl = null, fileType = null) {
+            const text = messageInput.textContent.trim();
+            if (!text && !fileUrl) return;
+
+            const messageRef = database.ref('messages').push();
+            const message = {
+                text: text || '',
+                timestamp: Date.now(),
+                deviceId: deviceId,
+                readBy: {
+                    [deviceId]: true
+                }
+            };
+
+            if (fileUrl) {
+                message.fileUrl = fileUrl;
+                message.fileType = fileType;
+            }
+
+            if (replyToMessage) {
+                message.replyTo = replyToMessage;
+                cancelReply();
+            }
+
+            messageRef.set(message);
+            messageInput.textContent = '';
+            localStorage.removeItem('messageDraft');
+        }
+
+        function appendMessage(message, messageId) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            const isOwnMessage = message.deviceId === deviceId;
+            messageDiv.className = `message ${isOwnMessage ? 'sent' : 'received'}`;
+            messageDiv.setAttribute('data-message-id', messageId);
+
+            let tapTimer = null;
+            messageDiv.addEventListener('click', () => {
+                const now = Date.now();
+                const timeSinceLastTap = now - lastTap;
+                lastTap = now;
+
+                if (timeSinceLastTap < 300) {
+                    replyToMessage = {
+                        id: messageId,
+                        text: message.text,
+                        deviceId: message.deviceId
+                    };
+                    showReplyPreview(message.text);
+                    document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
+                    messageDiv.classList.add('replying');
+                }
+            });
+
+            if (message.replyTo) {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'reply-to';
+                replyDiv.textContent = `↳ ${message.replyTo.text}`;
+                messageDiv.appendChild(replyDiv);
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+
+            if (message.fileUrl) {
+                if (message.fileType && message.fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = message.fileUrl;
+                    img.className = 'file-preview';
+                    img.loading = 'lazy';
+                    bubble.appendChild(img);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = message.fileUrl;
+                    link.target = '_blank';
+                    link.textContent = 'Download File';
+                    link.style.color = '#fff';
+                    bubble.appendChild(link);
+                }
+            }
+
+            if (message.text) {
+                const textDiv = document.createElement('div');
+                textDiv.textContent = message.text;
+                bubble.appendChild(textDiv);
+            }
+
+            const messageInfo = document.createElement('div');
+            messageInfo.className = 'message-info';
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            const time = new Date(message.timestamp || Date.now());
+            timestamp.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const readStatus = document.createElement('span');
+            readStatus.className = 'read-status';
+            updateReadStatus(readStatus, message.readBy || {});
+
+            messageInfo.appendChild(timestamp);
+            if (isOwnMessage) {
+                messageInfo.appendChild(readStatus);
+            }
+
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(messageInfo);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            if (!isOwnMessage) {
+                messageObserver.observe(messageDiv);
+            }
+        }
+
+        function showReplyPreview(text) {
+            replyText.textContent = `Replying to: ${text}`;
+            replyPreview.classList.add('active');
+        }
+
+        function cancelReply() {
+            replyToMessage = null;
+            replyPreview.classList.remove('active');
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('replying'));
+        }
+
+        function updateMessageStatus(messageId, message) {
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+            if (messageElement && message.deviceId === deviceId) {
+                const readStatus = messageElement.querySelector('.read-status');
+                if (readStatus) {
+                    updateReadStatus(readStatus, message.readBy || {});
+                }
+            }
+        }
+
+        // Update read status function to use ASCII characters
+        function updateReadStatus(element, readBy) {
+            const readCount = Object.keys(readBy).length;
+            const otherDevicesRead = readCount > 1;
+            element.textContent = otherDevicesRead ? '>>' : '>';
+            element.style.color = otherDevicesRead ? '#4CAF50' : '#888';
+        }
+
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function deleteChat() {
+            if (confirm('Are you sure you want to delete all messages?')) {
+                database.ref('messages').remove();
+                document.getElementById('chatMessages').innerHTML = '';
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-button') && !e.target.closest('.emoji-picker')) {
+                document.getElementById('emojiPicker').style.display = 'none';
+            }
+        });
+
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'none' ? 'grid' : 'none';
+        }
+
+        function insertEmoji(emoji) {
+            if (document.activeElement !== messageInput) {
+                messageInput.focus();
+            }
+            const range = window.getSelection().getRangeAt(0);
+            const node = document.createTextNode(emoji);
+            range.insertNode(node);
+            range.setStartAfter(node);
+            range.setEndAfter(node);
+        }
+
+        window.addEventListener('load', () => {
+            const draft = localStorage.getItem('messageDraft');
+            if (draft) messageInput.textContent = draft;
+            initEmojiPicker();
+        });
+    </script>
+</body>
+</html>
